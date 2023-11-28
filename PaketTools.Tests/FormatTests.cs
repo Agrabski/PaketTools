@@ -1,3 +1,5 @@
+using PaketTools.Format;
+
 namespace PaketTools.Tests;
 
 public class FormatTests
@@ -68,6 +70,32 @@ public class FormatTests
 			System.Text.Json
 			""";
 		Assert.Equal(expected, Paket.FormatReferences(content));
+	}
+
+	[Fact]
+	public void PaketDependenciesAreSortedAlphabetically()
+	{
+		var content =
+			"""
+			framework: net5.0
+			nuget System.Text.Json
+			nuget Castle.Core
+			nuget Newtonsoft.Json
+			source https://api.nuget.org/v3/index.json
+			""";
+		var expected =
+			"""
+			framework: net5.0
+
+			source https://api.nuget.org/v3/index.json
+			
+			nuget Castle.Core
+			nuget Newtonsoft.Json
+			nuget System.Text.Json
+
+			""";
+		var actual = Paket.FormatDependencies(content);
+		Assert.Equal(expected, actual);
 	}
 }
 

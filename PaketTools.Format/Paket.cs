@@ -1,9 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
-
-
-
-using System.Text;
+namespace PaketTools.Format;
 
 public static class Paket
 {
@@ -19,19 +17,22 @@ public static class Paket
 		var currentGroup = new List<string>();
 		groups[""] = currentGroup;
 		foreach (var line in lines)
-		{
 			if (line.StartsWith("group"))
 				if (groups.TryGetValue(line, out var group))
 					currentGroup = group;
 				else
-					groups[line] = currentGroup = new List<string>();
+					groups[line] = currentGroup = [];
 			else
 				currentGroup.Add(line);
-		}
 		return string.Join("\r\n", groups
 			.OrderBy(kv => kv.Key)
 			.Select(kv => $"{kv.Key}\r\n{string.Join("\r\n", kv.Value.Order())}")
 		);
 	}
-	public static void FormatDependencies(DirectoryInfo root) => throw new NotImplementedException();
+	public static string FormatDependencies(string content)
+	{
+		var dependencies = PaketDependencies.Parse(content);
+		return dependencies.ToString();
+
+	}
 }
